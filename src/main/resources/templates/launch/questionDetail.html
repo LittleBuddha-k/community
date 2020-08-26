@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${question.getTitle()}"></title>
+    <link rel="stylesheet" href="/community/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/community/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="/community/css/community.css"/>
+
+    <!--副文本相关-->
+    <link rel="stylesheet" href="/community/css/editormd.preview.css" />
+
+    <script type="text/javascript" src="/community/jquery/jquery-3.3.1.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" src="/community/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="/community/js/community.js"></script>
+
+    <!--副文本相关-->
+    <script src="/community/js/editormd.js"></script>
+    <script src="/community/lib/marked.min.js"></script>
+    <script src="/community/lib/prettify.min.js"></script>
+
+    <!--导航栏数据显示-->
+    <script type="text/javascript" src="/community/js/include.js"></script>
+</head>
+<body>
+<div th:insert="~{include/include::nav}"></div>
+
+<div class="container-fluid" style="margin-left: 20%;margin-right: 20%">
+    <div class="row" style="margin-top: 7%">
+        <!--左侧页面分布-->
+        <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-9">
+            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12">
+                <div class="media">
+                    <div class="media-body">
+                        <h4 class="media-heading">
+                            <a th:text="${question.getTitle()}">
+                                <!--th:href="@{/question/detail/(id=${question.getId()})} 这样是以id=xxx传入
+                                th:href="@{'/question/detail/'+${question.getId()}}是以restful形式-->
+                            </a>
+                        </h4>
+                        <p>
+                            <a href="#" th:text="${question.getType()}"></a>
+                            |
+                            |作者<a href="#" th:text="${question.getCreateBy().getAccount()}"></a>
+                            |发布于<a href="#"
+                                   th:text="${#dates.format(question.getCreateDate(),'yyyy-MM-dd HH:mm:ss')}"></a>
+                            |阅读数:<a href="#" th:text="${question.getView()}"></a>
+                        </p>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12">
+                <img src="" alt="">
+                <div id="question-view">
+                    <textarea  th:text="${question.getContent()}" style="display:none;">### Hello world!</textarea>
+                </div>
+                <script type="text/javascript">
+                    $(function() {
+                        var testView = editormd.markdownToHTML("question-view", {
+                            // markdown : "[TOC]\n### Hello world!\n## Heading 2", // Also, you can dynamic set Markdown text
+                            // htmlDecode : true,  // Enable / disable HTML tag encode.
+                            // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+                        });
+                    });
+                </script>
+                <hr>
+                <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12" style="padding-left: 0px;">
+                <span th:if="${question.getTags() != null}" th:each="tag:${question.getTags().split('、')}"
+                      style="margin-right: 10px">
+                    <span class="glyphicon glyphicon-tag label label-warning" th:text="${tag}">标签</span>
+                </span>
+
+                </div>
+                <hr class="col-xs-12 col-sm-12 col-sm-12 col-lg-12">
+                <div>
+                    <a th:href="@{/question/form/(id=${question.getId()})}"><span class="glyphicon glyphicon-edit" aria-hidden="true">编辑</span></a>
+                    <a href="#" style="margin-left: 20px"><span class="glyphicon glyphicon-send"
+                                                                aria-hidden="true">邀请<span
+                            class="badge">4</span></span></a>
+                </div>
+            </div>
+            <hr>
+            <hr>
+
+            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12">
+                <hr>
+                <h3><span style="margin-top: 50px" th:text="${question.getComments()}"></span>个回复</h3>
+                <hr style="margin-top: 2px;margin-bottom: 2px">
+                <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12" th:each="comment:${comments}">
+                    <input type="hidden" id="parent-id" th:value="${question.getId()}">
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object" src="../../images/a.jpg" style="width: 50px;height: 50px">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading" th:text="${comment.getCreateBy().getAccount()}"></h4>
+                            <div th:text="${comment.getCommentContent()}">这里显示内容</div>
+                            <div class="menu">
+                            <span class="glyphicon glyphicon-thumbs-up icon" aria-hidden="true"
+                                  style="cursor: pointer;">0</span>
+                                <span class="glyphicon glyphicon-thumbs-down icon" aria-hidden="true"
+                                      style="margin-left: 10px;cursor: pointer">0</span>
+                                <span class="glyphicon glyphicon-comment icon" aria-hidden="true"
+                                      style="margin-left: 10px;cursor: pointer" th:data-id="${comment.getId()}"
+                                      th:text="${comment.getCommentCount()}"
+                                      onclick="collapseComments(this)">0</span>
+                                <span th:text="${#dates.format(comment.getCreateDate(),'yyyy-MM-dd')}"
+                                      style="float: right"></span>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12 collapse"
+                                 th:id="${'comment-'+comment.getId()}"
+                                 style="margin-top: 50px;border: 1px solid;padding-top: 19px;">
+                                <!--二级评论-->
+                                <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12"
+                                     th:each="childrenComment:${comment.getChildrenComments()}">
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img class="media-object" src="../../images/a.jpg"
+                                                     style="width: 50px;height: 50px">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h4 class="media-heading"
+                                                th:text="${childrenComment.getCreateBy().getAccount()}"></h4>
+                                            <div th:text="${childrenComment.getCommentContent()}">这里显示二级评论内容</div>
+                                            <div class="menu">
+                                                <span style="float: right"
+                                                      th:text="${#dates.format(childrenComment.getCreateDate(),'yyyy-MM-dd')}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                <!--评论框-->
+                                <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12"
+                                     th:if="${session.currentUser != null}" style="margin: 10px 0;">
+                                    <input type="text" class="form-control" placeholder="评论一下。。。"
+                                           th:id="${'input-'+comment.getId()}">
+                                    <button id="cancel-btn" type="button" class="btn btn-default"
+                                            style="float: right;margi: 10px 5px">
+                                        取消
+                                    </button>
+                                    <button id="comment-btn" type="button" class="btn btn-success"
+                                            style="float: right;margi: 10px 5px" th:data-id="${comment.getId()}"
+                                            onclick="childrenComment(this)">
+                                        评论
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr style="border-bottom: solid 1px"></hr>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12" id="reply-frame" style="margin-top: 60px"
+                 th:if="${session.currentUser != null}">
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" src="../../images/a.jpg" style="width: 50px;height: 50px">
+                        </a>
+                    </div>
+                    <div class="media-body" style="padding-top: 15px">
+                        <h4 class="media-heading" th:text="${session.currentUser.getAccount()}"></h4>
+                    </div>
+                </div>
+
+                <input type="hidden" id="question-id" th:value="${question.getId()}">
+                <textarea id="reply-content" class="form-control" rows="9" style="margin: 10px 0"></textarea>
+                <button id="reply-btn" type="button" class="btn btn-success" style="float: right;margin-bottom: 10px"
+                        onclick="questionComment()">
+                    回复
+                </button>
+            </div>
+        </div>
+
+        <!--右侧页面分布-->
+        <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-3">
+            <h5>发起人</h5>
+            <hr>
+            <div class="media">
+                <div class="media-left">
+                    <a href="#">
+                        <img class="img-circle" src="../../images/a.jpg" style="width: 50px;height: 50px">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading" th:text="${question.getCreateBy().getAccount()}"></h4>
+                </div>
+            </div>
+            <hr>
+            <h3>站长信息</h3>
+            <hr>
+            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12">
+                <img src="/community/images/a.jpg" style="width: 110px;height: 110px">
+                <img src="/community/images/b.jpg" style="width: 110px;height: 110px">
+            </div>
+            <hr>
+
+            <hr>
+            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12">
+                <h5>相关问题</h5>
+                <span>
+
+                    <br>
+                </span>
+                <ul class="col-xs-12 col-sm-12 col-sm-12 col-lg-12" th:if="${relativeQuestion.size() > 0}"
+                    th:each="relative:${relativeQuestion}">
+                    <a th:href="@{'/question/detail/'+${relative.getId()}}">
+                        <li th:text="${relative.getTitle()}"></li>
+                    </a>
+                </ul>
+                <br>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-sm-12 col-lg-12">
+                <form class="form-inline" style="margin-top: 50px">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">社区日报</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                    </div>
+                    <button type="submit" class="btn btn-default">订阅</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

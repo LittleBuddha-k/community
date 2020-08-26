@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="nav">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid" style="margin-left: 20%;margin-right: 20%">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/community">社区</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <form class="navbar-form navbar-left">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="搜索问题、话题或人">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <ul class="nav navbar-nav">
+                    <li><a href="#"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>动态</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>发现</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>分享</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-book" aria-hidden="true"></span>文章</a></li>
+                    <li th:if="${session.currentUser != null}">
+                        <a href="/community/notice/list">
+                            <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
+                            通知
+                            <span class="badge" id="noticeCount"></span>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">...</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span>问答</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span>话题</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-road" aria-hidden="true"></span>活动</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>下载</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li th:if="${session.currentUser == null}"><a th:href="@{/login}">登录</a></li>
+                    <li class="dropdown" th:if="${session.currentUser != null}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true">发起</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/community/question/form">问题</a></li>
+                            <li><a href="#">文章</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" th:if="${session.currentUser != null}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><img class="media-object" src="/community/images/a.jpg" style="width: 35px;height: 30px"></a>
+                        <ul class="dropdown-menu">
+                            <li><a th:href="@{/operation/setting/(id=${session.currentUser.getId()})}">设置</a></li>
+                            <li><a th:href="@{/operation/list/privateLetter}">私信</a></li>
+                            <li role="separator" class="divider">---割---</li>
+                            <li><a href="/community/logOut">退出</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+</html>

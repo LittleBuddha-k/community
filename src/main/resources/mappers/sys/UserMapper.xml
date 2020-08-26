@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.littlebuddha.community.sys.mapper.UserMapper">
+    <sql id="userColumns">
+        id AS "id",
+        account AS "account",
+        name AS "name",
+        password AS "password",
+        picture AS "picture",
+        sex AS "sex",
+        age AS "age",
+        address AS "address",
+        github_id AS "githubId",
+        token AS "token",
+        ip AS "ip",
+        ip_name AS "ipName",
+        create_date AS "createDate",
+        create_by AS "createBy",
+        update_date AS "updateDate",
+        update_by AS "updateBy"
+    </sql>
+
+    <select id="selectByAccountAndPassword" resultType="com.littlebuddha.community.sys.entity.User">
+            SELECT
+                <include refid="userColumns" />
+            FROM user
+            WHERE account=#{account} AND password=#{password}
+    </select>
+
+    <select id="get" resultType="com.littlebuddha.community.sys.entity.User">
+        SELECT
+        <include refid="userColumns" />
+        FROM user
+        WHERE id=#{id}
+    </select>
+
+    <select id="findList" resultType="com.littlebuddha.community.sys.entity.User">
+        SELECT
+        <include refid="userColumns" />
+        FROM user
+    </select>
+
+    <insert id="insert">
+        INSERT INTO user(
+            id,
+            account,
+            name,
+            password,
+            picture,
+            sex,
+            age,
+            address,
+            github_id,
+            token,
+            ip,
+            ip_name,
+            create_date,
+            create_by,
+            update_date,
+            update_by
+        )VALUES(
+            #{id},
+            #{account},
+            #{name},
+            #{password},
+            #{picture},
+            #{sex},
+            #{age},
+            #{address},
+            #{githubId},
+            #{token},
+            #{ip},
+            #{ipName},
+            #{createDate},
+            #{createBy},
+            #{updateDate},
+            #{updateBy}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE user SET
+            account=#{account},
+            name=#{name},
+            password=#{password},
+            picture=#{picture},
+            sex=#{sex},
+            age=#{age},
+            address=#{address},
+            github_id=#{githubId},
+            token=#{token},
+            create_date=#{createDate},
+            create_by=#{createBy},
+            update_date=#{updateDate},
+            update_by=#{updateBy}
+        WHERE id=#{id}
+    </update>
+
+    <!--物理删除-->
+    <update id="deleteByPhysics">
+		DELETE FROM user
+		WHERE id = #{id}
+	</update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+		UPDATE user SET
+			del_flag = #{DEL_FLAG_DELETE},update_date=#{updateDate},
+			update_by=#{updateBy.id}
+		WHERE id = #{id}
+	</update>
+</mapper>
